@@ -2,13 +2,13 @@ from math import factorial
 from math import floor
 from time import time
 
-rTotal=1
-bTotal=1
-gTotal=2
-sTotal=2
-nTotal=2
-lTotal=2
-pTotal=8
+rTotal=2
+bTotal=2
+gTotal=4
+sTotal=4
+nTotal=4
+lTotal=4
+pTotal=18
 
 def comb(n, k):
     return factorial(n)/factorial(k)/factorial(n-k)
@@ -242,9 +242,9 @@ print ""
 print "Phase 2: File combinations"
 
 c={}
-for n in range(5):
-    for l in range(5):
-        for p in range(19):
+for n in range(nTotal+1):
+    for l in range(lTotal+1):
+        for p in range(pTotal+1):
             c[(n,l,p)]=0
 
 for index, knightBoard in enumerate(knightBoards):
@@ -275,16 +275,17 @@ for index, knightBoard in enumerate(knightBoards):
                 p+=file[3]
             f=9-splitList[-1] #f is the number of empty files
             for extraP in range(2*f+1):
-                c[(n, l, p+extraP)]+=combos*pawnOnlyBoards[f][extraP]
+                if p+extraP<=pTotal:
+                    c[(n, l, p+extraP)]+=combos*pawnOnlyBoards[f][extraP]
 print "Time elapsed: ", int(time()-startTime), " seconds"
 print ""
 
 print "Phase 3: Adding Kings and other pieces"
 
 totalCombos=0
-for n in range(5):
-    for l in range(5):
-        for p in range(19):
+for n in range(nTotal+1):
+    for l in range(lTotal+1):
+        for p in range(pTotal+1):
             endgameCombos=endgame(n, l, p)
             print "n, l, p is ", n, l, p
             print "endgameCombos is ", endgameCombos
