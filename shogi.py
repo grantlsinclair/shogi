@@ -2,6 +2,14 @@ from math import factorial
 from math import floor
 from time import time
 
+rTotal=1
+bTotal=1
+gTotal=2
+sTotal=2
+nTotal=2
+lTotal=2
+pTotal=8
+
 def comb(n, k):
     return factorial(n)/factorial(k)/factorial(n-k)
 
@@ -15,45 +23,51 @@ def splits(board):
 
 def addPawn(newBoard, emptyPawnBoard):
     newBoard=tuple(sorted(newBoard))
+    pawnCount=0
     for file in newBoard:
         if file[0]+file[1]>2:
             return
-        if file[2]+file[3]>5:
+        if file[2]+file[3]>7: #changed to 7
             return
         if file[1]+file[3]>2:
             return
+        pawnCount+=file[1]+file[3]
+    if pawnCount>pTotal:
+        return
     for oldBoard in pawnBoards[emptyPawnBoard]:
         if oldBoard==newBoard:
             return
     pawnBoards[emptyPawnBoard].append(newBoard)
 
-def addLancer(newBoard, emptyLancerBoard):
+def addLance(newBoard, emptyLanceBoard):
     newBoard=tuple(sorted(newBoard))
-    totalLancers=0
+    lanceCount=0
     for file in newBoard:
         if file[0]+file[1]>2:
             return
-        if file[2]+file[3]>5:
+        if file[2]+file[3]>7: #changed to 7
             return
-        totalLancers+=file[1]+file[3]
-    if totalLancers>4:
+        lanceCount+=file[1]+file[3]
+    if lanceCount>lTotal:
         return
-    for oldBoard in lancerBoards[emptyLancerBoard]:
+    for oldBoard in lanceBoards[emptyLanceBoard]:
         if oldBoard==newBoard:
             return
-    lancerBoards[emptyLancerBoard].append(newBoard)
+    lanceBoards[emptyLanceBoard].append(newBoard)
 
 def addKnight(newBoard):
     newBoard=tuple(sorted(newBoard))
-    totalKnights=0
+    knightCount=0
     for file in newBoard:
         if file[0]>2:
             return
         if file[1]>2:
             return
+        if file[2]>5: #added for high nTotal values
+            return
         for k in file:
             totalKnights+=k
-    if totalKnights>4:
+    if knightcount>nTotal:
         return
     for oldBoard in knightBoards:
         if oldBoard==newBoard:
@@ -62,42 +76,42 @@ def addKnight(newBoard):
 
 def endgame(n, l, p):
     #n is the number of Knights used already
-    #l is the number of Lancers used already
+    #l is the number of Lances used already
     #p is the number of pawns used already
-    s=81-n-l-p
+    squares=81-n-l-p
     endgameCombos=0
     #put Kings down
-    c=s*(s-1)
-    s-=2 #remove the squares taken by the Kings
+    c=squares*(squares-1)
+    squares-=2 #remove the squares taken by the Kings
     for R in [0, 1, 2]:
-        c1=c*(3-R)*4**R*factorial(s)/factorial(s-R)/factorial(R)
-        s1=s-R
+        c1=c*(3-R)*4**R*factorial(squares)/factorial(squares-R)/factorial(R)
+        squares1=squares-R
         for B in [0, 1, 2]:
-            c2=c1*(3-B)*4**B*factorial(s1)/factorial(s1-B)/factorial(B)
-            s2=s1-B
+            c2=c1*(3-B)*4**B*factorial(squares1)/factorial(squares1-B)/factorial(B)
+            squares2=squares1-B
             for N in range(5-n):
-                c3=c2*(5-n-N)*2**N*factorial(s2)/factorial(s2-N)/factorial(N)
-                s3=s2-N
+                c3=c2*(5-n-N)*2**N*factorial(squares2)/factorial(squares2-N)/factorial(N)
+                squares3=squares2-N
                 for L in range(5-l):
-                    c4=c3*(5-l-L)*2**L*factorial(s3)/factorial(s3-L)/factorial(L)
-                    s4=s3-L
+                    c4=c3*(5-l-L)*2**L*factorial(squares3)/factorial(squares3-L)/factorial(L)
+                    squares4=squares3-L
                     for G in range(5):
-                        c5=c4*(5-G)*2**G*factorial(s4)/factorial(s4-G)/factorial(G)
-                        s5=s4-G
+                        c5=c4*(5-G)*2**G*factorial(squares4)/factorial(squares4-G)/factorial(G)
+                        squares5=squares4-G
                         for S in range(5):
-                            c6=c5*(5-S)*4**S*factorial(s5)/factorial(s5-S)/factorial(S)
-                            s6=s5-S
+                            c6=c5*(5-S)*4**S*factorial(squares5)/factorial(squares5-S)/factorial(S)
+                            squares6=squares5-S
                             for P in range(19-p):
-                                c7=c6*(19-p-P)*2**P*factorial(s6)/factorial(s6-P)/factorial(P)
+                                c7=c6*(19-p-P)*2**P*factorial(squares6)/factorial(squares6-P)/factorial(P)
                                 endgameCombos+=c7
     return endgameCombos
 
 
 startTime=time()
 
-#Phase 1:   The creation of knightBoards, lancerBoards, pawnBoards,
-#           knight2lancer, lancer2pawn,
-#           knightCombos, lancerCombos, and pawnCombos
+#Phase 1:   The creation of knightBoards, lanceBoards, pawnBoards,
+#           knight2lance, lance2pawn,
+#           knightCombos, lanceCombos, and pawnCombos
 print "Phase 1: Creating Boards"
 print ""
 
@@ -139,57 +153,57 @@ for knightBoard in knightBoards:
             combos.append(1)
     knightCombos[knightBoard]=tuple(combos)
 
-knight2lancer={}
+knight2lance={}
 for knightBoard in knightBoards:
-    lancerBoard=()
+    lanceBoard=()
     for oldFile in knightBoard:
         newFile=(oldFile[0], 0, oldFile[1]+oldFile[2], 0),
-        lancerBoard+=newFile
-    knight2lancer[knightBoard]=lancerBoard
+        lanceBoard+=newFile
+    knight2lance[knightBoard]=lanceBoard
 print "knightBoards created: ", len(knightCombos)
 
-lancerBoards={}
-for emptyLancerBoard in knight2lancer.values():
-    lancerBoards[emptyLancerBoard]=[emptyLancerBoard]
-print "Compressed into ", len(lancerBoards), " empty lancerBoards"
+lanceBoards={}
+for emptyLanceBoard in knight2lance.values():
+    lanceBoards[emptyLanceBoard]=[emptyLanceBoard]
+print "Compressed into ", len(lanceBoards), " empty lanceBoards"
 print ""
 
-print "Creating lancerBoards"
-for emptyLancerBoard in lancerBoards:
+print "Creating lanceBoards"
+for emptyLanceBoard in lanceBoards:
     i=0
-    while i<len(lancerBoards[emptyLancerBoard]):
-        lancerBoard=lancerBoards[emptyLancerBoard][i]
+    while i<len(lanceBoards[emptyLanceBoard]):
+        lanceBoard=lanceBoards[emptyLanceBoard][i]
         for newFile in [((0, 1, 0, 0),), ((0, 0, 0, 1),)]:
-            addLancer(lancerBoard+newFile, emptyLancerBoard)
-        for j, oldFile in enumerate(lancerBoard):
+            addLance(lanceBoard+newFile, emptyLanceBoard)
+        for j, oldFile in enumerate(lanceBoard):
             for newFile in [((oldFile[0], oldFile[1]+1, oldFile[2], oldFile[3]),), ((oldFile[0], oldFile[1], oldFile[2], oldFile[3]+1),)]:
-                addLancer(lancerBoard[:j]+newFile+lancerBoard[j+1:], emptyLancerBoard)
+                addLance(lanceBoard[:j]+newFile+lanceBoard[j+1:], emptyLanceBoard)
         i+=1
 
-lancerCombos={}
-for emptyLancerBoard in lancerBoards:
-    for lancerBoard in lancerBoards[emptyLancerBoard]:
+lanceCombos={}
+for emptyLanceBoard in lanceBoards:
+    for lanceBoard in lanceBoards[emptyLanceBoard]:
         combos=[]
         for i in range(9):
-            if i<len(lancerBoard):
-                file=lancerBoard[i]
+            if i<len(lanceBoard):
+                file=lanceBoard[i]
                 combos.append(comb(2-file[0], file[1])*comb(5-file[2], file[3])*2**file[3])
             else:
                 combos.append(1)
-        lancerCombos[lancerBoard]=tuple(combos)
-print "lancerBoards created: ", len(lancerCombos)
+        lanceCombos[lanceBoard]=tuple(combos)
+print "lanceBoards created: ", len(lanceCombos)
 
-lancer2pawn={}
-for emptyLancerBoard in lancerBoards:
-    for lancerBoard in lancerBoards[emptyLancerBoard]:
+lance2pawn={}
+for emptyLanceBoard in lanceBoards:
+    for lanceBoard in lanceBoards[emptyLanceBoard]:
         pawnBoard=()
-        for oldFile in lancerBoard:
+        for oldFile in lanceBoard:
             newFile=(oldFile[0]+oldFile[1], 0, oldFile[2]+oldFile[3], 0),
             pawnBoard+=newFile
-        lancer2pawn[lancerBoard]=pawnBoard
+        lance2pawn[lanceBoard]=pawnBoard
 
 pawnBoards={}
-for emptyPawnBoard in lancer2pawn.values():
+for emptyPawnBoard in lance2pawn.values():
     pawnBoards[emptyPawnBoard]=[emptyPawnBoard]
 print "Compressed into ", len(pawnBoards), " empty pawnBoards"
 print "Time elapsed: ", int(time()-startTime), " seconds"
@@ -235,16 +249,16 @@ for n in range(5):
 
 for index, knightBoard in enumerate(knightBoards):
     print "Using knightBoard ", index, " of ", len(knightCombos)
-    for lancerBoard in lancerBoards[knight2lancer[knightBoard]]:
-        for pawnBoard in pawnBoards[lancer2pawn[lancerBoard]]:
-            splitList=list(set(splits(knightBoard)+splits(lancerBoard)+splits(pawnBoard)))
+    for lanceBoard in lanceBoards[knight2lance[knightBoard]]:
+        for pawnBoard in pawnBoards[lance2pawn[lanceBoard]]:
+            splitList=list(set(splits(knightBoard)+splits(lanceBoard)+splits(pawnBoard)))
             splitList.sort()
             splitStart=0
             combos=1
             for split in splitList:
                 numOfFiles=split-splitStart
                 emptyPlaces=9-splitStart
-                filePermutations=knightCombos[knightBoard][splitStart]*lancerCombos[lancerBoard][splitStart]*pawnCombos[pawnBoard][splitStart]
+                filePermutations=knightCombos[knightBoard][splitStart]*lanceCombos[lanceBoard][splitStart]*pawnCombos[pawnBoard][splitStart]
                 combos*=comb(emptyPlaces, numOfFiles)*filePermutations**numOfFiles
                 splitStart=split
             n=0
@@ -252,7 +266,7 @@ for index, knightBoard in enumerate(knightBoards):
                 for num in file:
                     n+=num
             l=0
-            for file in lancerBoard:
+            for file in lanceBoard:
                 l+=file[1]
                 l+=file[3]
             p=0
