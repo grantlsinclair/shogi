@@ -66,8 +66,8 @@ def addKnight(newBoard):
         if file[2]>5: #added for high nTotal values
             return
         for k in file:
-            totalKnights+=k
-    if knightcount>nTotal:
+            knightCount+=k
+    if knightCount>nTotal:
         return
     for oldBoard in knightBoards:
         if oldBoard==newBoard:
