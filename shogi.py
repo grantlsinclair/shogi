@@ -83,26 +83,26 @@ def endgame(n, l, p):
     #put Kings down
     c=squares*(squares-1)
     squares-=2 #remove the squares taken by the Kings
-    for R in [0, 1, 2]:
-        c1=c*(3-R)*4**R*factorial(squares)/factorial(squares-R)/factorial(R)
+    for R in range(0, rTotal+1):
+        c1=c*(rTotal+1-R)*4**R*factorial(squares)/factorial(squares-R)/factorial(R)
         squares1=squares-R
         for B in [0, 1, 2]:
-            c2=c1*(3-B)*4**B*factorial(squares1)/factorial(squares1-B)/factorial(B)
+            c2=c1*(bTotal+1-B)*4**B*factorial(squares1)/factorial(squares1-B)/factorial(B)
             squares2=squares1-B
-            for N in range(5-n):
-                c3=c2*(5-n-N)*2**N*factorial(squares2)/factorial(squares2-N)/factorial(N)
+            for N in range(nTotal+1-n):
+                c3=c2*(nTotal+1-n-N)*2**N*factorial(squares2)/factorial(squares2-N)/factorial(N)
                 squares3=squares2-N
-                for L in range(5-l):
-                    c4=c3*(5-l-L)*2**L*factorial(squares3)/factorial(squares3-L)/factorial(L)
+                for L in range(lTotal+1-l):
+                    c4=c3*(lTotal+1-l-L)*2**L*factorial(squares3)/factorial(squares3-L)/factorial(L)
                     squares4=squares3-L
-                    for G in range(5):
-                        c5=c4*(5-G)*2**G*factorial(squares4)/factorial(squares4-G)/factorial(G)
+                    for G in range(gTotal+1):
+                        c5=c4*(gTotal+1-G)*2**G*factorial(squares4)/factorial(squares4-G)/factorial(G)
                         squares5=squares4-G
-                        for S in range(5):
-                            c6=c5*(5-S)*4**S*factorial(squares5)/factorial(squares5-S)/factorial(S)
+                        for S in range(sTotal+1):
+                            c6=c5*(sTotal+1-S)*4**S*factorial(squares5)/factorial(squares5-S)/factorial(S)
                             squares6=squares5-S
-                            for P in range(19-p):
-                                c7=c6*(19-p-P)*2**P*factorial(squares6)/factorial(squares6-P)/factorial(P)
+                            for P in range(pTotal+1-p):
+                                c7=c6*(pTotal+1-p-P)*2**P*factorial(squares6)/factorial(squares6-P)/factorial(P)
                                 endgameCombos+=c7
     return endgameCombos
 
@@ -187,7 +187,7 @@ for emptyLanceBoard in lanceBoards:
         for i in range(9):
             if i<len(lanceBoard):
                 file=lanceBoard[i]
-                combos.append(comb(2-file[0], file[1])*comb(5-file[2], file[3])*2**file[3])
+                combos.append(comb(2-file[0], file[1])*comb(7-file[2], file[3])*2**file[3])
             else:
                 combos.append(1)
         lanceCombos[lanceBoard]=tuple(combos)
@@ -230,7 +230,7 @@ for emptyPawnBoard in pawnBoards:
         for i in range(9):
             if i<len(pawnBoard):
                 file=pawnBoard[i]
-                combos.append(comb(2-file[0], file[1])*comb(5-file[2], file[3])*2**file[3])
+                combos.append(comb(2-file[0], file[1])*comb(7-file[2], file[3])*2**file[3])
             else:
                 combos.append(1)
         pawnCombos[pawnBoard]=tuple(combos)
